@@ -56,9 +56,7 @@ import {
         Query: {
           fields: {
             listSensorsData: {
-              merge(existing, incoming) {
-                return incoming; // Always use the new data
-              }
+              merge: false // Don't merge with cached data
             }
           }
         }
@@ -66,13 +64,16 @@ import {
     }),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'network-only',
-        errorPolicy: 'all',
+        fetchPolicy: 'network-only', // Don't use cache
+        nextFetchPolicy: 'network-only',
+        pollInterval: 1000, // Poll every second
       },
       query: {
-        fetchPolicy: 'network-only',
-        errorPolicy: 'all',
+        fetchPolicy: 'network-only', // Don't use cache
       },
+      subscription: {
+        fetchPolicy: 'network-only' // Don't use cache
+      }
     },
   });
   

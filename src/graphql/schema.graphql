@@ -1,5 +1,5 @@
 type SensorData @model {
-  id: ID!
+  device_id: ID!
   timestamp: AWSTimestamp!
   temperature: Float!
   humidity: Float!

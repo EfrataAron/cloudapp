@@ -237,3 +237,18 @@ h3 {
     gap: 5px;
   }
 }
+
+.debug-panel {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.debug-panel pre {
+  background: #eee;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+}
