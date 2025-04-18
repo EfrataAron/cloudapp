@@ -1,0 +1,17 @@
+type SensorData @model {
+  id: ID!
+  timestamp: AWSTimestamp!
+  temperature: Float!
+  humidity: Float!
+  deviceId: String!
+}
+
+type Subscription {
+  onNewSensorData: SensorData
+    @aws_subscribe(mutations: ["createSensorData"])
+}
+
+type Query {
+  listSensorData: [SensorData]
+  getSensorDataByDevice(deviceId: String!): [SensorData]
+} 

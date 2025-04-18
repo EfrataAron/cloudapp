@@ -1,17 +1,24 @@
 import React from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
+import { Amplify } from 'aws-amplify';
+import config from './aws-exports';
+import { client } from './apollo';
 import SensorChart from './components/sensorchart';
+import './App.css';
 
-const client = new ApolloClient({
-  uri: 'https://your-appsync-endpoint/graphql', // Replace with your AppSync endpoint
-  cache: new InMemoryCache(),
-});
+// Configure Amplify with the correct config
+Amplify.configure(config);
 
 function App() {
   return (
     <ApolloProvider client={client}>
       <div className="App">
-        <SensorChart />
+        <header className="App-header">
+          <h1>Sensor Dashboard</h1>
+        </header>
+        <main>
+          <SensorChart />
+        </main>
       </div>
     </ApolloProvider>
   );

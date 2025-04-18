@@ -3,42 +3,76 @@ import {
     ApolloClient,
     InMemoryCache,
     split,
-    HttpLink
+    HttpLink,
+    ApolloLink
   } from '@apollo/client';
-  import { WebSocketLink } from '@apollo/client/link/ws';
-  import { getMainDefinition } from '@apollo/client/utilities';
+  import { createAuthLink } from 'aws-appsync-auth-link';
+  import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
+  import config from './aws-exports';
   
-  const httpLink = new HttpLink({
-    uri: 'https://your-appsync-api-id.appsync-api.eu-north-1.amazonaws.com/graphql',
-    headers: {
-      'x-api-key': 'YOUR_APPSYNC_API_KEY'
-    }
-  });
+  const url = config.API.GraphQL.endpoint;
+  const region = config.API.GraphQL.region;
+  const auth = {
+    type: 'API_KEY',
+    apiKey: config.API.GraphQL.apiKey,
+  };
   
-  const wsLink = new WebSocketLink({
-    uri: 'wss://your-appsync-api-id.appsync-realtime-api.eu-north-1.amazonaws.com/graphql',
-    options: {
-      reconnect: true,
-      connectionParams: {
-        authToken: 'YOUR_APPSYNC_API_KEY'
-      }
-    }
-  });
+  const httpLink = createAuthLink({ url, region, auth }).concat(
+    new HttpLink({ uri: url })
+  );
   
-  const splitLink = split(
-    ({ query }) => {
-      const def = getMainDefinition(query);
-      return (
-        def.kind === 'OperationDefinition' &&
-        def.operation === 'subscription'
-      );
-    },
-    wsLink,
+  const subscriptionLink = createSubscriptionHandshakeLink(
+    { url, region, auth },
     httpLink
   );
   
+  const link = split(
+    (operation) => {
+      const definition = operation.query.definitions[0];
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    subscriptionLink,
+    httpLink
+  );
+  
+  // Error handling link
+  const errorLink = new ApolloLink((operation, forward) => {
+    return forward(operation).map(response => {
+      if (response.errors) {
+        console.error('GraphQL Errors:', response.errors);
+      }
+      return response;
+    });
+  });
+  
+  // Create and export Apollo Client
   export const client = new ApolloClient({
-    link: splitLink,
-    cache: new InMemoryCache()
+    link: ApolloLink.from([errorLink, link]),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            listSensorsData: {
+              merge(existing, incoming) {
+                return incoming; // Always use the new data
+              }
+            }
+          }
+        }
+      }
+    }),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'network-only',
+        errorPolicy: 'all',
+      },
+      query: {
+        fetchPolicy: 'network-only',
+        errorPolicy: 'all',
+      },
+    },
   });
   
