@@ -152,7 +152,7 @@ h3 {
   display: grid;
   grid-template-columns: auto auto 1fr auto;
   gap: 15px;
-  padding: 10px;
+  padding: 15px;
   border-radius: 4px;
   align-items: center;
 }
@@ -170,12 +170,15 @@ h3 {
 .alert-time {
   color: #666;
   font-size: 0.9em;
+  white-space: nowrap;
 }
 
 .alert-severity {
   font-weight: bold;
   padding: 2px 8px;
   border-radius: 4px;
+  text-transform: uppercase;
+  font-size: 0.8em;
 }
 
 .alert-item.critical .alert-severity {
@@ -186,6 +189,23 @@ h3 {
 .alert-item.warning .alert-severity {
   background: #ff9800;
   color: white;
+}
+
+.alert-message {
+  font-weight: 500;
+}
+
+.alert-device {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.no-alerts {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  background: #f5f5f5;
+  border-radius: 4px;
 }
 
 .stats-grid {
@@ -263,4 +283,63 @@ h3 {
   border-radius: 4px;
   overflow-x: auto;
   font-size: 12px;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 20px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.summary-cards {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.summary-card h3 {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+.summary-card .value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+
+.chart-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
